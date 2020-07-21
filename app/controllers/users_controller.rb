@@ -1,5 +1,8 @@
 class UsersController < ApplicationController
     before_action :set_user, only: [:show, :edit, :update]
+    before_action :require_user, except: [:show, :index]
+    before_action :require_same_user, only: [:edit, :update]
+
     def new
         @user = User.new
     end
@@ -43,4 +46,11 @@ class UsersController < ApplicationController
     def set_user
         @user = User.find(params[:id])
     end 
+
+    def require_same_user
+        if current_user != @user
+            flash[:alert] = "You do not have permission to perform this action."
+            redirect_to @user
+        end
+    end
 end
